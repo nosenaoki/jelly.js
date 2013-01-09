@@ -146,22 +146,6 @@ describe('jelly.js', function () {
 
     });
 
-
-    //it('should resolve relative module name , using def.include', function () {
-    //    jelly.module('I.M1', function (def) {
-    //        var m = def.module('M2');
-
-    //        def.fromM2 = m.foo;
-    //    });
-
-    //    jelly.module('I.M2', function (def) {
-    //        def.foo = 'FOO';
-    //    });
-
-    //    expect(jelly.module('I.M1').fromM2).toBe('FOO');
-
-    //});
-
 });
 
 
