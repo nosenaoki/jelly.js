@@ -21,30 +21,30 @@ The second argument is a function which defines a module.
 You can define a module as following.
 
 ```javascript
-    jelly.module('Hello', function (def) {
-        //This defines private variable
-        var defaultName = 'World';
-    
-        function getName(name) {
-            if (name) {
-                return name;
-            } else {
-                return defaultName;
-            }
+jelly.module('Hello', function (def) {
+    //This defines private variable
+    var defaultName = 'World';
+
+    function getName(name) {
+        if (name) {
+            return name;
+        } else {
+            return defaultName;
         }
-    
-        //This defines public function
-        def.sayHelloTo= function (name) {
-            return 'Hello,' + getName(name) + '!';
-        };
-    });
+    }
+
+    //This defines public function
+    def.sayHelloTo= function (name) {
+        return 'Hello,' + getName(name) + '!';
+    };
+});
 ```
 
 You can use the module as following.
 
 ```javascript
-    var hello = jelly.module('Hello');
-    console.log(hello.sayHelloTo('jelly')); //prints Hello, Jelly! 
+var hello = jelly.module('Hello');
+console.log(hello.sayHelloTo('jelly')); //prints Hello, Jelly! 
 ```
 
 In the first time the module is used, The function specified as second argument is called with the definition object.
