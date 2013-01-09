@@ -21,104 +21,95 @@ var jelly = jelly || (function () {
         return false;
     }
 
-    function include(target, ns, type, args) {
-        var rv, i, factory;
+    function include(target, name, type, args) {
+        var result, i, factory;
 
-        if ((typeof ns) === 'function') {
-            factory = {
-                type: type,
-                impl: ns
+        if (!factories[name]) {
+            throw {
+                name: 'TypeNotFoundError',
+                message : 'the type "' + name + '"is not registered'
             };
-        } else {
-            if (!factories[ns]) {
-                throw {
-                    name: 'TypeNotFoundError',
-                    message : 'the type "' + ns + '"is not registered'
-                };
-            }
-
-            factory = factories[ns];
         }
+
+        factory = factories[name];
 
         if (type && factory.type !== type) {
             throw {
                 name: 'TypeInitializationError',
-                message : ns + ' cannot be initialized as ' + type
+                message : name + ' cannot be initialized as ' + type
             };
         }
 
-        if (inArray(ns, dependencyStack)) {
-            dependencyStack.push(ns);
+        if (inArray(name, dependencyStack)) {
+            dependencyStack.push(name);
             throw new Error('cyclic dependency found: ' + dependencyStack.join('->'));
         }
-        dependencyStack.push(ns);
+        dependencyStack.push(name);
         def = {};
 
-        rv = factory.impl(target);
+        result = factory.impl(target);
 
-        if (!rv) {
-            rv = target;
+        if (!result) {
+            result = target;
         }
 
-        if (plugins[ns]) {
-            for (i = 0; i < plugins[ns].length; i += 1) {
-                plugins[ns][i](rv);
+        if (plugins[name]) {
+            for (i = 0; i < plugins[name].length; i += 1) {
+                plugins[name][i](result);
             }
         }
 
         dependencyStack.pop();
 
-        if ((typeof rv.initialize) ===  'function') {
+        if ((typeof result.initialize) ===  'function') {
             if (args) {
-                rv.initialize.apply(rv, args);
+                result.initialize.apply(result, args);
             } else {
-                rv.initialize();
+                result.initialize();
             }
         }
-        return rv;
+        return result;
     }
 
-    function use(ns) {
+    function use(name) {
         var target,
-            rv,
             i;
 
-        if (!cache[ns]) {
+        if (!cache[name]) {
             target = {};
-            cache[ns] = include(target, ns, MODULE);
+            cache[name] = include(target, name, MODULE);
         }
 
-        return cache[ns];
+        return cache[name];
     }
 
-    def.module = function (ns, callback) {
+    def.module = function (name, callback) {
         if (callback) {
-            factories[ns] = {
+            factories[name] = {
                 type: MODULE,
                 impl : callback
             };
         } else {
-            return use(ns);
+            return use(name);
         }
 
     };
 
-    def.trait = function (ns, callback) {
-        factories[ns] = {
+    def.trait = function (name, callback) {
+        factories[name] = {
             type: TRAIT,
             impl : callback
         };
     };
 
     def.include = function (target, name, args) {
-        var tgt = target,
-            n = name;
+        var tgt = target;
 
         if ((typeof tgt) === 'string') {
             tgt = use(tgt);
         }
 
-        return include(tgt, n, TRAIT, args);
+        return include(tgt, name, TRAIT, args);
     };
 
     def.reset = function () {
