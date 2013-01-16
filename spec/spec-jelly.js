@@ -122,29 +122,44 @@ describe('jelly.js', function () {
 
     });
 
-    it('should call initialize method if defined', function () {
-        var m1,
-            t1 = {};
-
-        jelly.module('H.M1', function (def) {
-            def.initialize = function () {};
-            spyOn(def, 'initialize');
+    it('can mixin modules each other', function () {
+        var m2;
+        jelly.trait('G.M1', function (def) {
+            def.foo = 'FOO';
         });
 
-        m1 = jelly.module('H.M1');
-
-        expect(m1.initialize).toHaveBeenCalled();
-
-        jelly.trait('H.T1', function (def) {
-            def.initialize = function () {};
-            spyOn(def, 'initialize');
+        jelly.module('G.M2', function (def) {
+            jelly.include(def, 'G.M1');
+            def.bar = 'BAR';
         });
 
-        jelly.include(t1, 'H.T1', ['a', 'b', 'c']);
+        m2 = jelly.module('G.M2');
 
-        expect(t1.initialize).toHaveBeenCalledWith('a', 'b', 'c');
+        expect(m2.foo).toBe('FOO');
+        expect(m2.bar).toBe('BAR');
 
     });
+
+    it('should include same module once and only once', function () {
+        var m2,
+            counter = 0;
+        jelly.trait('G.T1', function (def) {
+            counter += 1;
+            def.foo = 'FOO';
+        });
+
+        jelly.module('G.M2', function (def) {
+            jelly.include(def, 'G.T1');
+            jelly.include(def, 'G.T1');
+            def.bar = 'BAR';
+        });
+
+        m2 = jelly.module('G.M2');
+
+        expect(counter).toBe(1);
+
+    });
+
 
 });
 
