@@ -13,13 +13,20 @@ describe('jelly-mock.js', function () {
             def.foo = 'mock';
         });
 
+        jelly.trait('Bar', function (def) {
+            def.bar = 'baz';
+        });
+
+
         jelly.mock.enable();
 
         expect(jelly.include({}, 'Foo').foo).toBe('mock');
+        expect(jelly.include({}, 'Bar').bar).toBe('baz');
 
         jelly.mock.disable();
 
         expect(jelly.include({}, 'Foo').foo).toBe('bar');
+        expect(jelly.include({}, 'Bar').bar).toBe('baz');
 
     });
 });

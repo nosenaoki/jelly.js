@@ -104,7 +104,7 @@ var jelly = jelly || (function () {
         }
 
         if (!tgt[PROP_INCLUDES]) {
-            tgt[PROP_INCLUDES] = {}
+            tgt[PROP_INCLUDES] = {};
         }
 
         if (!tgt[PROP_INCLUDES][name]) {
@@ -140,10 +140,14 @@ jelly.mock = (function () {
         },
         enable: function () {
             jelly.include = function (obj, name) {
+                var ret;
                 if (traits[name]) {
                     traits[name](obj);
-                    return obj;
+                    ret = obj;
+                } else {
+                    ret = includeFunction(obj, name);
                 }
+                return ret;
             };
         },
         disable: function () {

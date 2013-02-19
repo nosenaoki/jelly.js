@@ -1,7 +1,12 @@
 /* JSLint */
-/*global jelly,Jelly,describe,it, expect, spyOn, dump, use*/
+/*global jelly,Jelly,describe,it, expect, beforeEach, spyOn, dump, use*/
 describe('jelly.js', function () {
     'use strict';
+
+    beforeEach(function () {
+        jelly.reset();
+        jelly.mock.disable();
+    });
 
     it('should be define modules.', function () {
 
