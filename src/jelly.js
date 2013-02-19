@@ -126,3 +126,27 @@ var jelly = jelly || (function () {
 
     return def;
 }());
+
+jelly.mock = (function () {
+    'use strict';
+
+    var traits = {},
+        includeFunction = jelly.include;
+
+    return {
+        trait: function (name, obj) {
+            traits[name] = obj;
+        },
+        enable: function () {
+            jelly.include = function (obj, name) {
+                if (traits[name]) {
+                    traits[name](obj);
+                    return obj;
+                }
+            };
+        },
+        disable: function () {
+            jelly.include = includeFunction;
+        }
+    };
+}());
