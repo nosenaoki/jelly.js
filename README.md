@@ -78,15 +78,13 @@ jelly.trait('Hello', function (def) {
 ```
 
 
-jelly.include(target, trait, args)
+jelly.include(target, trait)
 ----------------------------------
 
 Using jelly.include , you can mix-in properties defined by traits to any objects.
 
 The first argument is a object to add properties defined by traits.
 The second argument is the name of a trait.
-The third optional argument is arguments passed to the initialization function which is described below.
-
   
 The below example shows the way to create new instance of trait defined above.
 
@@ -113,8 +111,3 @@ jelly.reset()
 
 jelly.reset remove all instances of modules.
 
-Initialization function
------------------------
-if a trait or module has a public function named 'initialize', 
-the function is called after the invokation of definition functions.
- 

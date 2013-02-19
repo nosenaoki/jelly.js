@@ -5,6 +5,7 @@ var jelly = jelly || (function () {
     'use strict';
     var MODULE = 'module',
         TRAIT = 'trait',
+        PROP_INCLUDES = '__includes',
         factories = {},
         cache = {},
         plugins = {},
@@ -21,7 +22,7 @@ var jelly = jelly || (function () {
         return false;
     }
 
-    function include(target, name, type, args) {
+    function include(target, name, type) {
         var result, i, factory;
 
         if (!factories[name]) {
@@ -61,13 +62,6 @@ var jelly = jelly || (function () {
 
         dependencyStack.pop();
 
-        if ((typeof result.initialize) ===  'function') {
-            if (args) {
-                result.initialize.apply(result, args);
-            } else {
-                result.initialize();
-            }
-        }
         return result;
     }
 
@@ -102,14 +96,21 @@ var jelly = jelly || (function () {
         };
     };
 
-    def.include = function (target, name, args) {
+    def.include = function (target, name) {
         var tgt = target;
 
         if ((typeof tgt) === 'string') {
             tgt = use(tgt);
         }
 
-        return include(tgt, name, TRAIT, args);
+        if (!tgt[PROP_INCLUDES]) {
+            tgt[PROP_INCLUDES] = {}
+        }
+
+        if (!tgt[PROP_INCLUDES][name]) {
+            tgt[PROP_INCLUDES][name] = 1;
+            return include(tgt, name, TRAIT);
+        }
     };
 
     def.reset = function () {
