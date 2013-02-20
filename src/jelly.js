@@ -46,7 +46,6 @@ var jelly = jelly || (function () {
             throw new Error('cyclic dependency found: ' + dependencyStack.join('->'));
         }
         dependencyStack.push(name);
-        def = {};
 
         result = factory.impl(target);
 
@@ -132,11 +131,16 @@ jelly.mock = (function () {
     'use strict';
 
     var traits = {},
+        modules = {},
+        moduleFunction = jelly.module,
         includeFunction = jelly.include;
 
     return {
         trait: function (name, obj) {
             traits[name] = obj;
+        },
+        module: function (name, callback) {
+            modules[name] = callback;
         },
         enable: function () {
             jelly.include = function (obj, name) {
@@ -149,9 +153,22 @@ jelly.mock = (function () {
                 }
                 return ret;
             };
+
+            jelly.module = function (name, callback) {
+                var ret;
+
+                if (!callback && modules[name]) {
+                    ret = {};
+                    modules[name](ret);
+                } else {
+                    ret = moduleFunction(name, callback);
+                }
+                return ret;
+            };
         },
         disable: function () {
             jelly.include = includeFunction;
+            jelly.module = moduleFunction;
         }
     };
 }());
