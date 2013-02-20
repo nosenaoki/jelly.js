@@ -136,6 +136,34 @@ jelly.mock = (function () {
         moduleFunction = jelly.module,
         includeFunction = jelly.include;
 
+    function mockInclude(obj, name) {
+        var ret;
+        if (traits[name]) {
+            traits[name](obj);
+            ret = obj;
+        } else {
+            ret = includeFunction(obj, name);
+        }
+        return ret;
+    }
+
+    function mockModule(name, callback) {
+        var ret;
+
+        if (!callback && modules[name]) {
+            if (moduleInstances[name]) {
+                ret = moduleInstances[name];
+            } else {
+                ret = {};
+                modules[name](ret);
+                moduleInstances[name] = ret;
+            }
+
+        } else {
+            ret = moduleFunction(name, callback);
+        }
+        return ret;
+    }
     return {
         trait: function (name, obj) {
             traits[name] = obj;
@@ -144,34 +172,8 @@ jelly.mock = (function () {
             modules[name] = callback;
         },
         enable: function () {
-            jelly.include = function (obj, name) {
-                var ret;
-                if (traits[name]) {
-                    traits[name](obj);
-                    ret = obj;
-                } else {
-                    ret = includeFunction(obj, name);
-                }
-                return ret;
-            };
-
-            jelly.module = function (name, callback) {
-                var ret;
-
-                if (!callback && modules[name]) {
-                    if (moduleInstances[name]) {
-                        ret = moduleInstances[name];
-                    } else {
-                        ret = {};
-                        modules[name](ret);
-                        moduleInstances[name] = ret;
-                    }
-
-                } else {
-                    ret = moduleFunction(name, callback);
-                }
-                return ret;
-            };
+            jelly.include = mockInclude;
+            jelly.module = mockModule;
         },
         disable: function () {
             jelly.include = includeFunction;
