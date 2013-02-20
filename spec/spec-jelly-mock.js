@@ -6,6 +6,7 @@ describe('jelly-mock.js', function () {
 
     beforeEach(function () {
         jelly.reset();
+        jelly.mock.reset();
     });
 
     it('should mock traits', function () {
@@ -35,23 +36,27 @@ describe('jelly-mock.js', function () {
     });
 
     it('should mock module', function () {
+        var counter = 1;
         jelly.module('Foo', function (def) {
             def.foo = 'bar';
         });
 
         jelly.mock.module('Foo', function (def) {
+            counter += 1;
             def.foo = 'mock';
+            def.cnt = counter;
         });
 
         jelly.module('Bar', function (def) {
             def.bar = 'baz';
         });
 
-
         jelly.mock.enable();
 
         expect(jelly.module('Foo').foo).toBe('mock');
         expect(jelly.module('Bar').bar).toBe('baz');
+
+        expect(jelly.module('Foo')).toEqual(jelly.module('Foo'));
 
         jelly.mock.disable();
 

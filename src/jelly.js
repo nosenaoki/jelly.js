@@ -132,6 +132,7 @@ jelly.mock = (function () {
 
     var traits = {},
         modules = {},
+        moduleInstances = {},
         moduleFunction = jelly.module,
         includeFunction = jelly.include;
 
@@ -158,8 +159,14 @@ jelly.mock = (function () {
                 var ret;
 
                 if (!callback && modules[name]) {
-                    ret = {};
-                    modules[name](ret);
+                    if (moduleInstances[name]) {
+                        ret = moduleInstances[name];
+                    } else {
+                        ret = {};
+                        modules[name](ret);
+                        moduleInstances[name] = ret;
+                    }
+
                 } else {
                     ret = moduleFunction(name, callback);
                 }
@@ -169,6 +176,9 @@ jelly.mock = (function () {
         disable: function () {
             jelly.include = includeFunction;
             jelly.module = moduleFunction;
+        },
+        reset: function () {
+            moduleInstances = {};
         }
     };
 }());
