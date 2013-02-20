@@ -181,6 +181,8 @@ jelly.mock = (function () {
         },
         reset: function () {
             moduleInstances = {};
+            modules = {};
+            traits = {};
         }
     };
 }());

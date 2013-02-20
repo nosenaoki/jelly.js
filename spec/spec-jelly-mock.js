@@ -65,4 +65,31 @@ describe('jelly-mock.js', function () {
 
     });
 
+    it('can reset all definition', function () {
+        jelly.module('M1', function (def) {
+            def.foo = 'bar';
+        });
+
+        jelly.mock.module('M1', function (def) {
+            def.foo = 'm1-1';
+        });
+
+        jelly.mock.enable();
+
+        jelly.mock.reset();
+
+        expect(jelly.module('M1').foo).toBe('bar');
+
+        jelly.trait('T1', function (def) {
+            def.foo = 'bar';
+        });
+
+        jelly.mock.trait('T1', function (def) {
+            def.foo = 't1-1';
+        });
+
+        jelly.mock.reset();
+
+        expect(jelly.include({}, 'T1').foo).toBe('bar');
+    });
 });
